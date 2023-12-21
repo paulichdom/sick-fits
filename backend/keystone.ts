@@ -1,16 +1,16 @@
-import 'dotenv/config';
-import { config, createSchema } from '@keystone-next/keystone/schema';
 import { createAuth } from '@keystone-next/auth';
+import { config, createSchema } from '@keystone-next/keystone/schema';
 import {
   withItemData,
   statelessSessions,
 } from '@keystone-next/keystone/session';
-import { User } from './schemas/User';
+import { ProductImage } from './schemas/ProductImage';
 import { Product } from './schemas/Product';
+import { User } from './schemas/User';
+import 'dotenv/config';
 
 const databaseURL =
-  process.env.DATABASE_URL ||
-  'mongodb://localhost/keystone-sick-fits-turtorial';
+  process.env.DATABASE_URL || 'mongodb://localhost/keystone-sick-fits-tutorial';
 
 const sessionConfig = {
   maxAge: 60 * 60 * 24 * 360, // How long they stay signed in?
@@ -23,12 +23,13 @@ const { withAuth } = createAuth({
   secretField: 'password',
   initFirstItem: {
     fields: ['name', 'email', 'password'],
-    // TODO: add in initial roles here
+    // TODO: Add in inital roles here
   },
 });
 
 export default withAuth(
   config({
+    // @ts-ignore
     server: {
       cors: {
         origin: [process.env.FRONTEND_URL],
@@ -44,16 +45,17 @@ export default withAuth(
       // Schema items go in here
       User,
       Product,
+      ProductImage,
     }),
     ui: {
-      // Show the UI only for people who pass this test
+      // Show the UI only for poeple who pass this test
       isAccessAllowed: ({ session }) =>
-        // console.log({ session });
+        // console.log(session);
         !!session?.data,
     },
     session: withItemData(statelessSessions(sessionConfig), {
       // GraphQL Query
-      User: 'id',
+      User: 'id name email',
     }),
   })
 );
