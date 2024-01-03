@@ -11,7 +11,7 @@ export default function useForm(initial = {}) {
     }
 
     if (type === 'file') {
-      value[0] = event.target.file;
+      [value] = event.target.files;
     }
 
     setInputs({
