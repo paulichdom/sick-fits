@@ -3,10 +3,11 @@ import gql from 'graphql-tag';
 import React from 'react';
 import styled from 'styled-components';
 import Product from './Product';
+import { perPage } from '../config';
 
 export const ALL_PRODUCTS_QUERY = gql`
-  query ALL_PRODUCTS_QUERY {
-    allProducts {
+  query ALL_PRODUCTS_QUERY($skip: Int = 0, $first: Int) {
+    allProducts(skip: $skip, first: $first) {
       id
       name
       price
@@ -21,8 +22,13 @@ export const ALL_PRODUCTS_QUERY = gql`
   }
 `;
 
-export default function Products() {
-  const { loading, data, error } = useQuery(ALL_PRODUCTS_QUERY);
+export default function Products({ page }) {
+  const { loading, data, error } = useQuery(ALL_PRODUCTS_QUERY, {
+    variables: {
+      skip: page * perPage - perPage,
+      first: perPage,
+    },
+  });
 
   if (loading) return <p>Loading ...</p>;
 
